@@ -29,10 +29,11 @@ public:
   void get_coefficients();
   void get_initial_adc_values(uint8_t *adc_init_values);
 
-  // read from ADC
-  void adc_read(READING_T type, uint8_t *data);
-  float get_temperature();
-  float get_pressure();
+  // ADC reading
+  void adc_request(READING_T type); // request a reading from the ADC
+  void adc_read(uint8_t *data); // read that reading from the ADC
+  float get_temperature(); // get a temperature reading
+  float get_pressure(); // get a pressure reading
 
   // write to ADC
   void adc_write(uint8_t reg, uint8_t num_bytes, uint8_t *data);

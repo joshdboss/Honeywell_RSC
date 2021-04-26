@@ -212,10 +212,9 @@ void Honeywell_RSC::get_initial_adc_values(uint8_t* adc_init_values) {
 
 //////////////////// ADC read ////////////////////
 
-void Honeywell_RSC::adc_read(READING_T type, uint8_t *data) {
+void Honeywell_RSC::adc_request(READING_T type) {
   // refer to datasheet section 3
 
-  // need to configure the ADC to temperature mode first
   // generate command
   uint8_t command[2] = {0};
   // WREG byte
@@ -225,31 +224,29 @@ void Honeywell_RSC::adc_read(READING_T type, uint8_t *data) {
   command[1] = (((_data_rate << RSC_DATA_RATE_SHIFT) & RSC_DATA_RATE_MASK)
                 | ((_mode << RSC_OPERATING_MODE_SHIFT) & RSC_OPERATING_MODE_MASK)
                 | (((type & 0x01) << 1) | RSC_SET_BITS_MASK));
-  // send command
+  // send mode commands
   select_adc();
   SPI.transfer(command[0]);
   SPI.transfer(command[1]);
-  deselect_adc();
-
-  add_dr_delay();
-
-  // receive results
-  select_adc();
   // send 0x10 command to start data conversion on ADC
   SPI.transfer(0x10);
+  deselect_adc();
+}
+
+void Honeywell_RSC::adc_read(uint8_t *data) {
   for (int i = 0; i < 4; i++) {
     data[i] = SPI.transfer(0x00);
   }
-  deselect_adc();
-}
+
+} 
 
 float Honeywell_RSC::get_temperature() {
   // reads temperature from ADC, stores raw value in sensor object, but returns the temperature in Celsius
   // refer to datasheet section 3.5 ADC Programming and Read Sequence – Temperature Reading
 
+  // get the reading
   uint8_t sec_arr[3] = {0};
-
-  adc_read(TEMPERATURE, sec_arr);
+  adc_read(sec_arr);
 
   // first 14 bits represent temperature
   // following 10 bits are random thus discarded
@@ -265,7 +262,7 @@ float Honeywell_RSC::get_pressure() {
 
   // read the 24 bits uncompensated pressure
   uint8_t sec_arr[3] = {0};
-  adc_read(PRESSURE, sec_arr);
+  adc_read(sec_arr);
   int32_t p_raw = ((uint32_t)sec_arr[0] << 24) | ((uint32_t)sec_arr[1] << 16) | ((uint32_t)sec_arr[2] << 8);
   p_raw /= 256; // this make sure that the sign of p_raw is the same as that of the 24-bit reading
 
