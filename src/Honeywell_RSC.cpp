@@ -231,8 +231,6 @@ void Honeywell_RSC::adc_request(READING_T type) {
 }
 
 void Honeywell_RSC::adc_read(uint8_t *data) {
-  for (int i = 0; i < 4; i++) {
-{
   // reads values from the adc
 
   select_adc();
