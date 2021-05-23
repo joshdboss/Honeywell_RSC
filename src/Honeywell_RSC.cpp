@@ -14,7 +14,7 @@ Honeywell_RSC::Honeywell_RSC(int drdy_pin, int cs_ee_pin, int cs_adc_pin) {
   digitalWrite(_cs_adc_pin, HIGH);
 }
 
-void Honeywell_RSC::init() {
+void Honeywell_RSC::init(RSC_DATA_RATE data_rate) {
   // read and store constants from EEPROM
   get_catalog_listing();
   get_serial_number();
@@ -30,8 +30,7 @@ void Honeywell_RSC::init() {
 
   get_coefficients();
 
-  set_data_rate(N_DR_20_SPS);
-  set_mode(NORMAL_MODE);
+  set_data_rate(data_rate);
   delay(5);
 
 }
@@ -228,17 +227,26 @@ void Honeywell_RSC::adc_request(READING_T type) {
   select_adc();
   SPI.transfer(command[0]);
   SPI.transfer(command[1]);
-  // send 0x10 command to start data conversion on ADC
-  SPI.transfer(0x10);
   deselect_adc();
 }
 
 void Honeywell_RSC::adc_read(uint8_t *data) {
   for (int i = 0; i < 4; i++) {
+{
+  // reads values from the adc
+
+  select_adc();
+
+  // send 0x10 command to start data conversion on ADC
+  SPI.transfer(0x10);
+
+  for (int i = 0; i < 3; i++)
+  {
     data[i] = SPI.transfer(0x00);
   }
 
-} 
+  deselect_adc();
+}
 
 float Honeywell_RSC::get_temperature() {
   // reads temperature from ADC, stores raw value in sensor object, but returns the temperature in Celsius
@@ -374,26 +382,50 @@ void Honeywell_RSC::add_dr_delay() {
 void Honeywell_RSC::set_data_rate(RSC_DATA_RATE dr) {
   _data_rate = dr;
   switch (dr) {
-    case N_DR_20_SPS:
-    case N_DR_45_SPS:
-    case N_DR_90_SPS:
-    case N_DR_175_SPS:
-    case N_DR_330_SPS:
-    case N_DR_600_SPS:
-    case N_DR_1000_SPS:
-      set_mode(NORMAL_MODE);
-      break;
-    case F_DR_40_SPS:
-    case F_DR_90_SPS:
-    case F_DR_180_SPS:
-    case F_DR_350_SPS:
-    case F_DR_660_SPS:
-    case F_DR_1200_SPS:
-    case F_DR_2000_SPS:
-      set_mode(FAST_MODE);
-      break;
-    default:
-      set_mode(NA_MODE);
+  case N_DR_20_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_45_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_90_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_175_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_330_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_600_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case N_DR_1000_SPS:
+    set_mode(NORMAL_MODE);
+    break;
+  case F_DR_40_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_90_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_180_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_350_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_660_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_1200_SPS:
+    set_mode(FAST_MODE);
+    break;
+  case F_DR_2000_SPS:
+    set_mode(FAST_MODE);
+    break;
+  default:
+    set_mode(NA_MODE);
   }
 }
 
@@ -429,4 +461,3 @@ void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
   adc_write(0, 5, command);
   delay(5);
 }
-

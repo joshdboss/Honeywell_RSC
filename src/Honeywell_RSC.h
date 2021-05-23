@@ -10,7 +10,7 @@ class Honeywell_RSC {
 public:
   Honeywell_RSC(int drdy_pin, int cs_ee_pin, int cs_adc_pin);
 
-  void init();
+  void init(RSC_DATA_RATE data_rate);
 
   // chip selection
   void select_eeprom();
