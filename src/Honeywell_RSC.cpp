@@ -145,7 +145,7 @@ void Honeywell_RSC::get_pressure_unit() {
       _pressure_unit = BAR;
       _pressure_unit_name = "bar";
     }
-  } else if (buf[RSC_PRESSURE_UNIT_LEN - 2] == 'i') {
+  } else if (buf[RSC_PRESSURE_UNIT_LEN - 3] == 'I') {
     _pressure_unit = PSI;
     _pressure_unit_name = "psi";
   }
@@ -222,6 +222,7 @@ void Honeywell_RSC::adc_request(READING_T type) {
   // configuration byte, which includes DataRate, Mode, Pressure/Temperature choice
   command[1] = (((_data_rate << RSC_DATA_RATE_SHIFT) & RSC_DATA_RATE_MASK)
                 | ((_mode << RSC_OPERATING_MODE_SHIFT) & RSC_OPERATING_MODE_MASK)
+                | (0x01 << 2)
                 | (((type & 0x01) << 1) | RSC_SET_BITS_MASK));
   // send mode commands
   select_adc();
@@ -454,8 +455,9 @@ void Honeywell_RSC::set_mode(RSC_MODE mode) {
 }
 
 void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
+  SPI.transfer(RSC_ADC_RESET_COMMAND);
   // refer to datasheet section 3.4 ADC Programming Sequence – Power Up
-  uint8_t command[5] = {RSC_ADC_RESET_COMMAND, adc_init_values[0], adc_init_values[1], adc_init_values[2], adc_init_values[3]};
-  adc_write(0, 5, command);
+  uint8_t command[4] = {adc_init_values[0], adc_init_values[1], adc_init_values[2], adc_init_values[3]};
+  adc_write(0, 4, command);
   delay(5);
 }
