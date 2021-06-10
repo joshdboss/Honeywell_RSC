@@ -36,35 +36,35 @@ void Honeywell_RSC::init(RSC_DATA_RATE data_rate) {
 }
 
 void Honeywell_RSC::select_eeprom() {
+  // the EEPROM interface operates in SPI mode 0 (CPOL = 0, CPHA = 0) or mode 3 (CPOL = 1, CPHA = 1)
+  SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE0));
+    
   // enable CS_EE
   digitalWrite(_cs_ee_pin, LOW);
 
   // make sure CS_ADC is not active
   digitalWrite(_cs_adc_pin, HIGH);
-
-  // the EEPROM interface operates in SPI mode 0 (CPOL = 0, CPHA = 0) or mode 3 (CPOL = 1, CPHA = 1)
-  SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE0));
 }
 
 void Honeywell_RSC::deselect_eeprom() {
-  SPI.endTransaction();
   digitalWrite(_cs_ee_pin, HIGH);
+  SPI.endTransaction();
 }
 
 void Honeywell_RSC::select_adc() {
+  // the ADC interface operates in SPI mode 1 (CPOL = 0, CPHA = 1)
+  SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE1));
+  
   // enable CS_ADC
   digitalWrite(_cs_adc_pin, LOW);
 
   // make sure CS_EE is not active
   digitalWrite(_cs_ee_pin, HIGH);
-
-  // the ADC interface operates in SPI mode 1 (CPOL = 0, CPHA = 1)
-  SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE1));
 }
 
 void Honeywell_RSC::deselect_adc() {
-  SPI.endTransaction();
   digitalWrite(_cs_adc_pin, HIGH);
+  SPI.endTransaction();
 }
 
 //////////////////// EEPROM read ////////////////////
@@ -455,7 +455,10 @@ void Honeywell_RSC::set_mode(RSC_MODE mode) {
 }
 
 void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
+  select_adc();
+  delay(5);
   SPI.transfer(RSC_ADC_RESET_COMMAND);
+  deselect_adc();
   // refer to datasheet section 3.4 ADC Programming Sequence – Power Up
   uint8_t command[4] = {adc_init_values[0], adc_init_values[1], adc_init_values[2], adc_init_values[3]};
   adc_write(0, 4, command);
