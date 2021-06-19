@@ -40,7 +40,7 @@ public:
 
   // other ADC related functions
   void setup_adc(uint8_t* adc_init_values);
-  void add_dr_delay();
+  uint16_t calc_dr_delay();
   
   // setter functions
   void set_data_rate(RSC_DATA_RATE dr);

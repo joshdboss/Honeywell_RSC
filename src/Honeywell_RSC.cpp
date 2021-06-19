@@ -32,7 +32,6 @@ void Honeywell_RSC::init(RSC_DATA_RATE data_rate) {
 
   set_data_rate(data_rate);
   delay(5);
-
 }
 
 void Honeywell_RSC::select_eeprom() {
@@ -326,104 +325,69 @@ void Honeywell_RSC::adc_write(uint8_t reg, uint8_t num_bytes, uint8_t* data) {
   deselect_adc();
 }
 
-void Honeywell_RSC::add_dr_delay() {
-  float delay_duration = 0;
-  // calculating delay based on the Data Rate
+uint16_t Honeywell_RSC::calc_dr_delay() {
+  uint16_t delay_duration;
+  
   switch (_data_rate) {
     case N_DR_20_SPS:
-      delay_duration = MSEC_PER_SEC / 20;
+      delay_duration = 49990;
       break;
     case N_DR_45_SPS:
-      delay_duration = MSEC_PER_SEC / 45;
+      delay_duration = 22250;
       break;
     case N_DR_90_SPS:
-      delay_duration = MSEC_PER_SEC / 90;
+      delay_duration = 11260;
       break;
     case N_DR_175_SPS:
-      delay_duration = MSEC_PER_SEC / 175;
+      delay_duration = 5780;
       break;
     case N_DR_330_SPS:
-      delay_duration = MSEC_PER_SEC / 330;
+      delay_duration = 3040;
       break;
     case N_DR_600_SPS:
-      delay_duration = MSEC_PER_SEC / 600;
+      delay_duration = 1680;
       break;
     case N_DR_1000_SPS:
-      delay_duration = MSEC_PER_SEC / 1000;
+      delay_duration = 1010;
       break;
     case F_DR_40_SPS:
-      delay_duration = MSEC_PER_SEC / 40;
+      delay_duration = 25000;
       break;
     case F_DR_90_SPS:
-      delay_duration = MSEC_PER_SEC / 90;
+      delay_duration = 11120;
       break;
     case F_DR_180_SPS:
-      delay_duration = MSEC_PER_SEC / 180;
+      delay_duration = 5630;
       break;
     case F_DR_350_SPS:
-      delay_duration = MSEC_PER_SEC / 350;
+      delay_duration = 2890;
       break;
     case F_DR_660_SPS:
-      delay_duration = MSEC_PER_SEC / 660;
+      delay_duration = 1520;
       break;
     case F_DR_1200_SPS:
-      delay_duration = MSEC_PER_SEC / 1200;
+      delay_duration = 840;
       break;
     case F_DR_2000_SPS:
-      delay_duration = MSEC_PER_SEC / 2000;
+      delay_duration = 510;
       break;
     default:
-      delay_duration = 50;
+      delay_duration = 49990;
   }
-  delay((int)delay_duration + 2);
 }
 
 void Honeywell_RSC::set_data_rate(RSC_DATA_RATE dr) {
   _data_rate = dr;
-  switch (dr) {
-  case N_DR_20_SPS:
+  if (dr >= N_DR_20_SPS && _data_rate <= N_DR_1000_SPS)
+  {
     set_mode(NORMAL_MODE);
-    break;
-  case N_DR_45_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case N_DR_90_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case N_DR_175_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case N_DR_330_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case N_DR_600_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case N_DR_1000_SPS:
-    set_mode(NORMAL_MODE);
-    break;
-  case F_DR_40_SPS:
+  }
+  else if (dr >= F_DR_40_SPS && _data_rate <= F_DR_2000_SPS)
+  {
     set_mode(FAST_MODE);
-    break;
-  case F_DR_90_SPS:
-    set_mode(FAST_MODE);
-    break;
-  case F_DR_180_SPS:
-    set_mode(FAST_MODE);
-    break;
-  case F_DR_350_SPS:
-    set_mode(FAST_MODE);
-    break;
-  case F_DR_660_SPS:
-    set_mode(FAST_MODE);
-    break;
-  case F_DR_1200_SPS:
-    set_mode(FAST_MODE);
-    break;
-  case F_DR_2000_SPS:
-    set_mode(FAST_MODE);
-    break;
-  default:
+  }
+  else
+  {
     set_mode(NA_MODE);
   }
 }
