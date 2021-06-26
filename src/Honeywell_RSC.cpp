@@ -374,6 +374,7 @@ uint16_t Honeywell_RSC::calc_dr_delay() {
     default:
       delay_duration = 49990;
   }
+  return delay_duration;
 }
 
 void Honeywell_RSC::set_data_rate(RSC_DATA_RATE dr) {
@@ -420,9 +421,9 @@ void Honeywell_RSC::set_mode(RSC_MODE mode) {
 
 void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
   select_adc();
-  delay(5);
   SPI.transfer(RSC_ADC_RESET_COMMAND);
   deselect_adc();
+  delay(500);
   // refer to datasheet section 3.4 ADC Programming Sequence – Power Up
   uint8_t command[4] = {adc_init_values[0], adc_init_values[1], adc_init_values[2], adc_init_values[3]};
   adc_write(0, 4, command);
