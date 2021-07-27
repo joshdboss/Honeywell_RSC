@@ -8,7 +8,7 @@
 
 class Honeywell_RSC {
 public:
-  Honeywell_RSC(int drdy_pin, int cs_ee_pin, int cs_adc_pin);
+  Honeywell_RSC(int drdy_pin, int cs_ee_pin, int cs_adc_pin, int spi_bus);
 
   void init(RSC_DATA_RATE data_rate);
 

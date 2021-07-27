@@ -41,7 +41,8 @@ void Honeywell_RSC::select_eeprom() {
   if (_spi_bus == 0)
   {
     SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE0));
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE0));
   }
@@ -58,7 +59,8 @@ void Honeywell_RSC::deselect_eeprom() {
   if (_spi_bus == 0)
   {
     SPI.endTransaction();
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.endTransaction();
   }
@@ -69,7 +71,8 @@ void Honeywell_RSC::select_adc() {
   if (_spi_bus == 0)
   {
     SPI.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE1));
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.beginTransaction(SPISettings(1250000, MSBFIRST, SPI_MODE1));
   }
@@ -87,7 +90,8 @@ void Honeywell_RSC::deselect_adc() {
   if (_spi_bus == 0)
   {
     SPI.endTransaction();
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.endTransaction();
   }
@@ -109,7 +113,8 @@ void Honeywell_RSC::eeprom_read(uint16_t address, uint8_t num_bytes, uint8_t *da
   {
     SPI.transfer(command[0]);
     SPI.transfer(command[1]);
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.transfer(command[0]);
     SPI1.transfer(command[1]);
@@ -122,7 +127,8 @@ void Honeywell_RSC::eeprom_read(uint16_t address, uint8_t num_bytes, uint8_t *da
     if (_spi_bus == 0)
     {
       data[i] = SPI.transfer(0x00);
-    } else if (_spi_bus == 1)
+    }
+    else if (_spi_bus == 1)
     {
       data[i] = SPI1.transfer(0x00);
     }
@@ -269,7 +275,8 @@ void Honeywell_RSC::adc_request(READING_T type) {
   {
     SPI.transfer(command[0]);
     SPI.transfer(command[1]);
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.transfer(command[0]);
     SPI1.transfer(command[1]);
@@ -286,7 +293,8 @@ void Honeywell_RSC::adc_read(uint8_t *data) {
   if (_spi_bus == 0)
   {
     SPI.transfer(0x10);
-  } else if (_spi_bus == 1)
+  }
+  else if (_spi_bus == 1)
   {
     SPI1.transfer(0x10);
   }
@@ -296,10 +304,9 @@ void Honeywell_RSC::adc_read(uint8_t *data) {
     if (_spi_bus == 0)
     {
       data[i] = SPI.transfer(0x00);
-      data[i] = SPI.transfer(0x00);
-    } else if (_spi_bus == 1)
+    }
+    else if (_spi_bus == 1)
     {
-      data[i] = SPI1.transfer(0x00);
       data[i] = SPI1.transfer(0x00);
     }
   }
@@ -381,13 +388,7 @@ void Honeywell_RSC::adc_write(uint8_t reg, uint8_t num_bytes, uint8_t* data) {
   // send command
   select_adc();
   for (int i = 0; i < num_bytes + 1; i++) {
-    if (_spi_bus == 0)
-    {
-      SPI.transfer(command[i]);
-    } else if (_spi_bus == 1)
-    {
-      SPI1.transfer(command[i]);
-    }
+    SPI.transfer(command[i]);
   }
   deselect_adc();
 }
@@ -488,13 +489,7 @@ void Honeywell_RSC::set_mode(RSC_MODE mode) {
 
 void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
   select_adc();
-  if (_spi_bus == 0)
-  {
-    SPI.transfer(RSC_ADC_RESET_COMMAND);
-  } else if (_spi_bus == 1)
-  {
-    SPI1.transfer(RSC_ADC_RESET_COMMAND);
-  }
+  SPI.transfer(RSC_ADC_RESET_COMMAND);
   deselect_adc();
   delay(500);
   // refer to datasheet section 3.4 ADC Programming Sequence – Power Up
