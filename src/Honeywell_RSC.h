@@ -59,6 +59,7 @@ private:
   uint8_t _drdy_pin;
   uint8_t _cs_ee_pin;
   uint8_t _cs_adc_pin;
+  uint8_t _spi_bus;
 
   // from EEPROM
   unsigned char _catalog_listing[RSC_SENSOR_NAME_LEN];
