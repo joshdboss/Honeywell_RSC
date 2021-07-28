@@ -388,7 +388,14 @@ void Honeywell_RSC::adc_write(uint8_t reg, uint8_t num_bytes, uint8_t* data) {
   // send command
   select_adc();
   for (int i = 0; i < num_bytes + 1; i++) {
-    SPI.transfer(command[i]);
+    if (_spi_bus == 0)
+    {
+      SPI.transfer(command[i]);
+    }
+    else if (_spi_bus == 1)
+    {
+      SPI1.transfer(command[i]);
+    }
   }
   deselect_adc();
 }
@@ -489,7 +496,14 @@ void Honeywell_RSC::set_mode(RSC_MODE mode) {
 
 void Honeywell_RSC::setup_adc(uint8_t* adc_init_values) {
   select_adc();
-  SPI.transfer(RSC_ADC_RESET_COMMAND);
+  if (_spi_bus == 0)
+  {
+    SPI.transfer(RSC_ADC_RESET_COMMAND);
+  }
+  else if (_spi_bus == 1)
+  {
+    SPI1.transfer(RSC_ADC_RESET_COMMAND);
+  }
   deselect_adc();
   delay(500);
   // refer to datasheet section 3.4 ADC Programming Sequence – Power Up
